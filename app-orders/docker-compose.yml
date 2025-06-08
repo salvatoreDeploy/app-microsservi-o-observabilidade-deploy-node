@@ -1,0 +1,12 @@
+services:
+  postgres:
+    container_name: microservices-orders-postgres
+    image: bitnami/postgresql:latest
+    ports:
+      - "5482:5432"
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=microservices-orders
+    volumes:
+      - ./docker:/docker-entrypoint-initdb.d
