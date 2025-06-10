@@ -10,6 +10,7 @@ import { randomUUID } from "node:crypto";
 import { sendOrderCreated } from "./broker/messages/order-created.ts";
 import {setTimeout} from 'timers/promises'
 import { tracer } from './tracer/tracer.ts';
+import fastifyCors from '@fastify/cors';
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -18,6 +19,8 @@ app.setValidatorCompiler(validatorCompiler)
 
 // Escalonamento Horinzontal
 // Deploy: Blue-green deployment
+
+app.register(fastifyCors, { origin: '*' })
 
 app.get('/health', () => {
   return 'OK'
