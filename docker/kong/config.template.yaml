@@ -3,12 +3,8 @@ _transform: true
 
 services:
   - name: orders
-    url: http://host.docker.internal:3333
-    protocol: http
-    port: 3333
+    url: ${ORDERS_SERVICE_URL}
     path: /
-    connect_timeout: 3000
-    retries: 3
     routes:
       - name: api-orders
         protocols:
@@ -17,12 +13,13 @@ services:
         paths:
           - /orders
           
-# Teste para deploy de invoices
+  # Realizar ao subir deploy de invoices
 
   - name: invoices
-    url: http://host.docker.internal:3334
+    url: ${INVOICES_SERVICE_URL}
     protocol: http
-    port: 3334
+    host: host.docker.internal
+    port: 3333
     path: /
     routes:
       - name: api-invoices
@@ -44,6 +41,6 @@ plugins:
         - DELETE
         - OPTIONS
       headers:
-        - Acecpts
-        - Contenty-Type
+        - Accept
+        - Content-Type
         - Authorization
