@@ -1,9 +1,12 @@
 name: Deploy API
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
+# on:
+#   push:
+#     branches:
+#       - main
 
 jobs:
   deploy:
@@ -14,21 +17,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Install PNPM
-        with:
-          version: 9
-          run_install: false
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install dependencies
         working-directory: ./infra
-        run: pnpm install --frozen-lockfile
+        run: npm install --frozen-lockfile
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

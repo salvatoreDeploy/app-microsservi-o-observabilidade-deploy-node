@@ -6,6 +6,51 @@ import { kongDockerImage } from "../images/kong";
 import { ordersHttpListener } from './orders'
 import { invoicesHttpListener } from './invoices'
 
+const kongProxyHttpTargetGroup = appLoadBalancer.createTargetGroup('kongProxy-target', {
+  port: 8000,
+  protocol: 'HTTP',
+  healthCheck: {
+    path: '/orders/health',
+    protocol: 'HTTP'
+  }
+})
+
+export const kongProxyHttpListener = appLoadBalancer.createListener('kongProxy-listener', {
+  port: 80,
+  protocol: 'HTTP',
+  targetGroup: kongProxyHttpTargetGroup
+})
+
+const adminKongHttpTargetGroup = appLoadBalancer.createTargetGroup('adminKong-target', {
+  port: 8002,
+  protocol: 'HTTP',
+  healthCheck: {
+    path: '/',
+    protocol: 'HTTP'
+  }
+})
+
+export const adminKongHttpListener = appLoadBalancer.createListener('adminKong-listener', {
+  port: 8002,
+  protocol: 'HTTP',
+  targetGroup: adminKongHttpTargetGroup
+})
+
+const adminKongAPIHttpTargetGroup = appLoadBalancer.createTargetGroup('adminKongAPI-target', {
+  port: 8001,
+  protocol: 'HTTP',
+  healthCheck: {
+    path: '/',
+    protocol: 'HTTP'
+  }
+})
+
+export const adminKongAPIHttpListener = appLoadBalancer.createListener('adminKongAPI-listener', {
+  port: 8001,
+  protocol: 'HTTP',
+  targetGroup: adminKongAPIHttpTargetGroup
+})
+
 export const kongService = new awsx.classic.ecs.FargateService('microservice-fargate-kong', {
   cluster,
   desiredCount: 1,
@@ -16,7 +61,9 @@ export const kongService = new awsx.classic.ecs.FargateService('microservice-far
       cpu: 256,
       memory: 512,
       portMappings: [
-
+        kongProxyHttpListener,
+        adminKongHttpListener,
+        adminKongAPIHttpListener
       ],
       environment: [
         { name: 'KONG_DATABASE', value: 'off' },
